@@ -1,0 +1,14 @@
+let social_engineering_techniques = dynamic([
+    "T1566",         // Phishing
+    "T1189",         // Drive-by Compromise
+    "T1204",         // User Execution
+    "T1598",         // Phishing for Information
+    "T1591"          // Gather Victim Identity Information
+]);
+SecurityIncident
+| where TimeGenerated > ago(1d) //adjust
+| where Classification != "FalsePositive"
+| where Status != "Closed"
+| extend techniquesArray = parse_json(AdditionalData).techniques
+| where techniquesArray has_any(social_engineering_techniques)
+| project TimeGenerated, Title, Description, Severity, Status, AdditionalData, techniquesArray
