@@ -12,5 +12,4 @@ DeviceTvmSoftwareInventory
 | join kind=inner LatestOSVersions on OSPlatform
 | project DeviceName, OSPlatform, OSVersion, DeviceType,
           IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
-
-//count: | summarize UpToDateDeviceCount = count() by IsUpToDate
+| summarize UpToDateDeviceCount = count() by IsUpToDate
