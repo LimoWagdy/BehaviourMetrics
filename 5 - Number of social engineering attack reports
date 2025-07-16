@@ -1,0 +1,13 @@
+project in (SPO) AND type = "SPO Incident" AND (labels not in (spo-test) OR labels is EMPTY) AND "SPO: Customer" != nwsandbox AND status != "SPO Rejected" AND status != Canceled AND created >= 2025-04-01 AND (
+  (summary ~ "phishing" OR
+  summary ~ "impersonation" OR
+  summary ~ "social engineering" OR
+  summary ~ "vishing" OR
+  summary ~ "smishing") AND
+  (description !~ "simulation" OR
+  description !~ "campaign" OR
+  description !~ "test")
+) ORDER BY cf[10509] ASC, cf[11801] ASC, created ASC
+
+Can change time interval
+Can change description check for different categories (metric 17)
