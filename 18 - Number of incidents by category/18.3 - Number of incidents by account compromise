@@ -1,0 +1,13 @@
+let social_engineering_techniques = dynamic([
+    "T1078",         // Valid Accounts
+    "T1110",         // Brute force
+    "T1556"         // Modify authentication process
+]);
+SecurityIncident
+| where TimeGenerated > ago(1d)
+| where Classification != "FalsePositive"
+| where Severity != "Informational"
+| where Status != "Closed"
+| extend techniquesArray = parse_json(AdditionalData).techniques
+| where techniquesArray has_any(social_engineering_techniques)
+| project TimeGenerated, Title, Description, Severity, Status, AdditionalData, techniquesArray
