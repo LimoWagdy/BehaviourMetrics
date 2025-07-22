@@ -8,6 +8,7 @@ let social_engineering_techniques = dynamic([
 SecurityIncident
 | where TimeGenerated > ago(1d) //adjust
 | where Classification != "FalsePositive"
+| where Severity != "Informational"
 | where Status != "Closed"
 | extend techniquesArray = parse_json(AdditionalData).techniques
 | where techniquesArray has_any(social_engineering_techniques)
