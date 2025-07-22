@@ -1,4 +1,4 @@
-let social_engineering_techniques = dynamic([
+let account_compromise_techniques = dynamic([
     "T1078",         // Valid Accounts
     "T1110",         // Brute force
     "T1556"         // Modify authentication process
@@ -9,5 +9,5 @@ SecurityIncident
 | where Severity != "Informational"
 | where Status != "Closed"
 | extend techniquesArray = parse_json(AdditionalData).techniques
-| where techniquesArray has_any(social_engineering_techniques)
+| where techniquesArray has_any(account_compromise_techniques)
 | project TimeGenerated, Title, Description, Severity, Status, AdditionalData, techniquesArray
