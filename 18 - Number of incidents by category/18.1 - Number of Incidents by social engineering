@@ -3,7 +3,6 @@ let social_engineering_techniques = dynamic([
     "T1189",         // Drive-by Compromise
     "T1204",         // User Execution
     "T1598",         // Phishing for Information
-    "T1591"          // Gather Victim Identity Information
 ]);
 SecurityIncident
 | where TimeGenerated > ago(1d) //adjust
