@@ -1,0 +1,11 @@
+let data_breach_techniques = dynamic([
+    "T1213"         // Data from information repositories
+]);
+SecurityIncident
+| where TimeGenerated > ago(1d) //adjust
+| where Classification != "FalsePositive"
+| where Severity != "Informational"
+| where Status != "Closed"
+| extend techniquesArray = parse_json(AdditionalData).techniques
+| where techniquesArray has_any(malware_infection_techniques)
+| project TimeGenerated, Title, Description, Severity, Status, AdditionalData, techniquesArray
