@@ -2,11 +2,12 @@ let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
     "Windows11", "10.0.26100.4351",
     "Windows10", "10.0.19045.5965",
     "Windows7", "10.0.7601.26729",
+    "macOS", "15.6",
 ];
 DeviceTvmSoftwareInventory
 | join kind=inner (
     DeviceInfo
-    | where DeviceType != "Workstation"
+    | where DeviceType == "Workstation"
     | project DeviceId, DeviceType
 ) on DeviceId
 | join kind=inner LatestOSVersions on OSPlatform
