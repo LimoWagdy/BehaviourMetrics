@@ -5,15 +5,13 @@ let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
 ];
 
 DeviceTvmSoftwareInventory
-| where OSPlatform in~ ("Windows11", "Windows10", "macOS")
-| where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
+| join kind=inner LatestOSVersions on OSPlatform
 | join kind=inner (
     DeviceInfo
     | where DeviceType == "Workstation"
     | project DeviceId, DeviceType
 ) on DeviceId
-| join kind=inner LatestOSVersions on OSPlatform
-| project OSPlatform, OSVersion,
+| project DeviceId, OSPlatform, OSVersion,
           IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
-| summarize TotalDevices = count(), UpToDate = countif(IsUpToDate == "Yes")
+| summarize TotalDevices = dcount(DeviceId), UpToDate = dcountif(DeviceId, IsUpToDate == "Yes")
 | extend PercentUpToDate = round(100.0 * todouble(UpToDate) / TotalDevices, 2)
