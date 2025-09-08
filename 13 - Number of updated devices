@@ -12,3 +12,5 @@ DeviceTvmSoftwareInventory
 | join kind=inner LatestOSVersions on OSPlatform
 | project OSPlatform, OSVersion,
           IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
+| summarize TotalDevices = count(), UpToDate = countif(IsUpToDate == "Yes")
+| extend PercentUpToDate = round(100.0 * todouble(UpToDate) / TotalDevices, 2)
