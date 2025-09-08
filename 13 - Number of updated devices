@@ -1,8 +1,7 @@
 let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
-    "Windows11", "10.0.26100.4351",
-    "Windows10", "10.0.19045.5965",
-    "Windows7", "10.0.7601.26729",
-    "macOS", "15.6",
+    "Windows11", "10.0.26100.4946",
+    "Windows10", "10.0.19045.6216",
+    "macOS", "15.6.1.0"
 ];
 DeviceTvmSoftwareInventory
 | join kind=inner (
@@ -11,6 +10,5 @@ DeviceTvmSoftwareInventory
     | project DeviceId, DeviceType
 ) on DeviceId
 | join kind=inner LatestOSVersions on OSPlatform
-| project DeviceName, OSPlatform, OSVersion, DeviceType,
+| project OSPlatform, OSVersion,
           IsUpToDate = iff(OSVersion == LatestBuild, "Yes", "No")
-| summarize UpToDateDeviceCount = count() by IsUpToDate
