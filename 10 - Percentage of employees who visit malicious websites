@@ -1,0 +1,14 @@
+let DomainList = externaldata(Domain: string) 
+["https://raw.githubusercontent.com/LimoWagdy/Thesis/refs/heads/main/DomainLists/AllCategories.csv"] 
+with (format="csv", ignoreFirstRecord=True);
+
+DeviceTvmSoftwareInventory
+| where isnotempty(OSPlatform)
+| where OSPlatform in~ ("Windows11", "Windows10")
+| where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
+| join kind=inner (DeviceInfo| where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
+| join kind=leftouter (DomainList | project Domain) on $left.RemoteUrl == $right.Domain
+| project DeviceId,
+          Visited = iff(isnotempty(Domain), "Yes", "No")
+| summarize TotalDevices = count(), Visits = countif(Visited == "Yes")
+| extend PercentVisited = round(100.0 * todouble(Visits) / TotalDevices, 2)
