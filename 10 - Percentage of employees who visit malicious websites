@@ -1,15 +1,17 @@
-let DomainList = externaldata(Domain: string) 
+let MaliciousDomains = externaldata(Domain: string) 
 ["https://raw.githubusercontent.com/LimoWagdy/BehaviourMetrics/refs/heads/main/Inventory/MaliciousDomains.csv"] 
 with (format="csv", ignoreFirstRecord=True);
 
-DeviceTvmSoftwareInventory
+let Devices = DeviceTvmSoftwareInventory
 | where isnotempty(OSPlatform)
 | where OSPlatform in~ ("Windows11", "Windows10")
 | where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | join kind=inner (DeviceInfo | where DeviceType == "Workstation" | project DeviceId, DeviceType) on DeviceId
-| join kind=inner (
-       DeviceNetworkEvents
-       | project DeviceId, RemoteUrl
-) on DeviceId
-| join kind=leftouter (DomainList | project Domain) on $left.RemoteUrl == $right.Domain
+| distinct DeviceId;
+
+Devices
+| join kind=inner (DeviceNetworkEvents | project DeviceId, RemoteUrl) on DeviceId
+| join kind=leftouter (MaliciousDomains | project Domain) on $left.RemoteUrl == $right.Domain
 | summarize Visited = iff(countif(isnotempty(Domain)) > 0, "Yes", "No") by DeviceId
+| summarize TotalDevices = dcount(DeviceId), VisitedDevices = dcountif(DeviceId, Visited == "Yes")
+| extend PercentMalicious = round(100.0 * todouble(VisitedDevices) / TotalDevices, 2);
