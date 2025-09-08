@@ -3,7 +3,10 @@ let LatestOSVersions = datatable(OSPlatform:string, LatestBuild:string) [
     "Windows10", "10.0.19045.6216",
     "macOS", "15.6.1.0"
 ];
+
 DeviceTvmSoftwareInventory
+| where OSPlatform in~ ("Windows11", "Windows10", "macOS")
+| where OSPlatform !contains "Server" and OSPlatform !contains "WVD"
 | join kind=inner (
     DeviceInfo
     | where DeviceType == "Workstation"
